@@ -1,9 +1,22 @@
 import React, { useState } from "react";
-
-
+import { useAuth } from "../context/AuthContext";
+import { FcGoogle } from "react-icons/fc";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { googleSignIn } = useAuth();
+  const [savedata,setsavedata]=useState(false)
+  const handleLogin = async () => {
+    try {
+      const data = await googleSignIn();
+      console.log(data.user)
+      setsavedata(true)
+    } catch (e) {
+      // common popup blocker issue → try signInWithRedirect if needed
+      console.error(e);
+      alert(e.message);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,32 +26,17 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <form className="login-box" onSubmit={handleSubmit}>
-        <h2>HackNexus</h2>
-        <p className="subtitle">Connect. Create. Compete.</p>
+      {savedata?<div> User all data</div>:<div className="login-box">
+        <button
+          onClick={handleLogin}
+          className="flex items-center justify-center gap-2  bg-white text-gray-700 border border-gray-300 rounded-lg font-medium shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200"
+        >
+          <FcGoogle className="text-xl" />
+          <span>Sign in with Google</span>
+        </button>
 
-        <input
-          type="email"
-          placeholder="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+      </div>}
 
-        <input
-          type="password"
-          placeholder="Enter Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button type="submit">Login</button>
-
-        <p className="signup-text">
-          Don’t have an account? <a href="#">Sign Up</a>
-        </p>
-      </form>
     </div>
   );
 };

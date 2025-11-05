@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png"
 import { Link, useNavigate } from 'react-router-dom';
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
 

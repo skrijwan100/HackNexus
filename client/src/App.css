@@ -84,9 +84,8 @@
 
 
 body {
-  margin: 0;
   background: #0d0d0d;
-  font-family: 'Orbitron', sans-serif;
+
 }
 
 .login-container {
@@ -169,4 +168,151 @@ body {
 
 .signup-text a:hover {
   text-shadow: 0 0 8px #00ffc8;
+}
+
+
+/* Singup */
+
+
+.signup-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-box {
+  width: 50vw;
+  margin-top: 250px;
+  margin-bottom: 20px;
+  background: #111;
+  padding: 45px 50px;
+  border-radius: 12px;
+  border: 1px solid #00D084;
+  box-shadow: 0 0 25px #00D084a6;
+  text-align: center;
+}
+
+.signup-box h2 {
+  margin: 0;
+  color: #00D084;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #ccc;
+  font-size: 12px;
+  margin-bottom: 25px;
+  letter-spacing: 1px;
+}
+
+.signup-box input {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  background: transparent;
+  border: 1px solid #00D084;
+  border-radius: 6px;
+  color: #00D084;
+  outline: none;
+}
+
+.signup-box button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #00D084;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #111;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.signup-box button:hover {
+  background: #05ffad;
+  box-shadow: 0 0 12px #00ffc87e;
+}
+
+.section-title {
+  text-align: left;
+  color: #ccc;
+  font-size: 13px;
+  margin-top: 14px;
+}
+
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.skill-tag {
+  padding: 6px 12px;
+  border: 1px solid #00D084;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #00D084;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.skill-tag.selected,
+.skill-tag:hover {
+  background: #00D084;
+  color: #111;
+}
+
+.team-pref {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: #ccc;
+  font-size: 13px;
+}
+
+.login-text {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #b9b9b9;
+}
+
+.login-text a {
+  color: #00D084;
+  font-weight: 600;
+  text-decoration: none;
+}
+.img-upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 18px;
+  cursor: pointer;
+}
+
+.preview-img {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  border: 2px solid #00D084;
+  object-fit: cover;
+  box-shadow: 0 0 12px #00D08480;
+  transition: 0.3s;
+}
+
+.preview-img:hover {
+  box-shadow: 0 0 18px #00ffd080;
+}
+
+#profile-upload {
+  display: none;
+}
+
+.upload-text {
+  font-size: 12px;
+  color: #b9b9b9;
+  margin-top: 6px;
 }

@@ -14,9 +14,9 @@ const Navbar = () => {
         <li><a href="#workshops">Workshops</a></li>
         <li><a href="#seminars">Seminars</a></li> 
         <li><a href="#team">Find Team</a></li>
-        <li></li>
+        <li><Link to="/login" className="login-btn">Login</Link></li>
       </ul>
-      <Link to="/login" className="login-btn">Login</Link>
+      
 
       <div className="nav-toggle" onClick={() => setOpen(!open)}>
         <span></span><span></span><span></span>

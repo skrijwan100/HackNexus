@@ -1,16 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FcGoogle } from "react-icons/fc";
+import Signup from "../pages/Useralldata";
+import { auth } from "../lib/firebase";;
+
 const Login = () => {
+  const { user, googleSignIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { googleSignIn } = useAuth();
-  const [savedata,setsavedata]=useState(false)
+  const [savedata, setsavedata] = useState(false)
+  const [userdata, setuserdata] = useState({})
+  useEffect(() => {
+    const getToken = async () => {
+      if (!user) return; // <-- important check
+      const token = await user.getIdToken();
+      console.log("ID Token:", token);
+
+    };
+    getToken();
+  }, [user]);
   const handleLogin = async () => {
     try {
       const data = await googleSignIn();
       console.log(data.user)
-      setsavedata(true)
+      setuserdata(data.user)
+      // const token = await auth.currentUser.getIdToken();
+      // console.log(token)
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/fecthuser`, {
+        headers: {
+          "uid":data.user.uid
+        }
+      });
+      const data1 = await res.json();
+      console.log(data1);
+      if(!data1.status){
+        return  setsavedata(true)
+      }
+
     } catch (e) {
       // common popup blocker issue → try signInWithRedirect if needed
       console.error(e);
@@ -26,7 +52,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      {savedata?<div> User all data</div>:<div className="login-box">
+      {savedata ? <div><Signup userdata={userdata} /></div> : <div className="login-box">
         <button
           onClick={handleLogin}
           className="flex items-center justify-center gap-2  bg-white text-gray-700 border border-gray-300 rounded-lg font-medium shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200"

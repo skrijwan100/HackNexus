@@ -2,7 +2,7 @@ import express from "express"
 import upload from "../middlewares/upload.js"
 import fs from 'fs'
 import cloudinary from "../config/cloudinary.js"
-import User from "./models/User.js"
+import User from "../models/User.js"
 import admin from "firebase-admin";
 const userRoute= express.Router()
 admin.initializeApp();

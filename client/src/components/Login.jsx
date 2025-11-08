@@ -34,7 +34,7 @@ const Login = () => {
       const data1 = await res.json();
       console.log(data1);
       if(!data1.status){
-        return  setsavedata(true)
+        // return  setsavedata(true)
       }
 
     } catch (e) {

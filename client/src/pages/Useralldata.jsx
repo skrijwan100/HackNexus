@@ -49,7 +49,7 @@ const Signup = ({ userdata }) => {
         
         const userinfo = ({
             uid:userdata.uid,
-            name: userdata.email,
+            name: userdata.displayName,
             email: userdata.email,
             collagename: formdata.collagename,
             yearofs: formdata.yearofs,

@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import Home from './pages/Home'
 import Login from './components/Login'
+import Profile from './components/Profile'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -21,6 +22,7 @@ function App() {
     <Routes>
       <Route path='/' element={<Home/>}/>
       <Route path='/login' element={<Login/>}/>
+      <Route path='/profile' element={<Profile/>}/>
     </Routes>
     </BrowserRouter>
     </>

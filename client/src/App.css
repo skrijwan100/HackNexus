@@ -21,6 +21,7 @@
   list-style: none;
   display: flex;
   gap: 30px;
+  align-items: center;
   transition: 0.4s;
 }
 

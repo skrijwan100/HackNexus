@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios"
+import logo from "../assets/logo.png"
 const skillsList = [
     "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA"
 ];
@@ -72,7 +73,8 @@ const Signup = ({ userdata }) => {
     return (
         <div className="signup-container">
             <form className="signup-box" onSubmit={handleSubmit}>
-                <h2>HackNexus</h2>
+                <div className="flex items-center justify-center"><div className="nav-logo"><img src={logo} alt="" className="h-[140px]" /></div></div>
+                {/* <h2>HackNexus</h2> */}
                 <p className="subtitle">Create your account</p>
                 <div className="img-upload-box">
                     <label htmlFor="profile-upload">

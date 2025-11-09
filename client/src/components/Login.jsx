@@ -6,7 +6,6 @@ import { auth } from "../lib/firebase";
 import {useNavigate} from "react-router-dom"
 const Login = () => {
   const { user, googleSignIn } = useAuth();
-  const [email, setEmail] = useState("");
   const [savedata, setsavedata] = useState(false)
   const [userdata, setuserdata] = useState({})
       const navigate = useNavigate();

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios"
 import logo from "../assets/logo.png"
+import { useNavigate } from "react-router";
 const skillsList = [
     "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA"
 ];
@@ -11,7 +12,9 @@ const Signup = ({ userdata }) => {
     const [selectedintarest, setSelectedintarest] = useState([]);
     const [image, setImage] = useState(null);
     const [formdata, setformdata] = useState({ collagename: "", yearofs: "" })
-      const [selectedFile, setSelectedFile] = useState(null)
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [loder,setloder]=useState(false)
+    const navigate=useNavigate()
     useEffect(() => {
         console.log(userdata)
     }, [])
@@ -41,6 +44,7 @@ const Signup = ({ userdata }) => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setloder(true)
         const formData = new FormData();
         console.log(selectedFile)
         if (selectedFile) {
@@ -65,8 +69,13 @@ const Signup = ({ userdata }) => {
                 }
             });
             console.log(responce)
+            if(responce.status){
+                navigate("/")
+                return setloder(false)
+            }
         } catch (error) {
             console.log(error)
+            return setloder(false)
         }
     };
 
@@ -115,7 +124,7 @@ const Signup = ({ userdata }) => {
                         </span>
                     ))}
                 </div>
-                <button type="submit">Save Account</button>
+                <button type="submit">{loder?<div className="loder"></div>:'Save Account'}</button>
             </form>
         </div>
     );

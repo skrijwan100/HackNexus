@@ -27,7 +27,6 @@ const Login = () => {
       const data2 = await res1.json();
       console.log(data2);
       if(data2.status){
-        
           return navigate("/")
       }
       setsavedata(true)

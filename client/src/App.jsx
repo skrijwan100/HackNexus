@@ -17,7 +17,7 @@ import { useAuth } from './context/AuthContext'
 function App() {
   const { user } = useAuth();
   const { loading, setLoading } = useloding()
-  const [log, setlog] = useState(false)
+  const [log, setlog] = useState(true)
   const [userdata,setuserdata]=useState({})
     useEffect(() => {
       const getToken = async () => {

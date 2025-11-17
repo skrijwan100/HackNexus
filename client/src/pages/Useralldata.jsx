@@ -13,8 +13,8 @@ const Signup = ({ userdata }) => {
     const [image, setImage] = useState(null);
     const [formdata, setformdata] = useState({ collagename: "", yearofs: "" })
     const [selectedFile, setSelectedFile] = useState(null)
-    const [loder,setloder]=useState(false)
-    const navigate=useNavigate()
+    const [loder, setloder] = useState(false)
+    const navigate = useNavigate()
     useEffect(() => {
         console.log(userdata)
     }, [])
@@ -50,26 +50,26 @@ const Signup = ({ userdata }) => {
         if (selectedFile) {
             formData.append("profilepic", selectedFile);
         }
-        
+
         const userinfo = ({
-            uid:userdata.uid,
+            uid: userdata.uid,
             name: userdata.displayName,
             email: userdata.email,
             collagename: formdata.collagename,
             yearofs: formdata.yearofs,
-            allskills:selectedSkills,
-            allintarest:selectedintarest,
+            allskills: selectedSkills,
+            allintarest: selectedintarest,
             existingPhotoURL: !image ? userdata.photoURL : null
         })
         formData.append("userinfo", JSON.stringify(userinfo));
         try {
-            const responce = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/savedata`,formData ,{
+            const responce = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/savedata`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 }
             });
             console.log(responce)
-            if(responce.status){
+            if (responce.status) {
                 navigate("/")
                 return setloder(false)
             }
@@ -124,7 +124,7 @@ const Signup = ({ userdata }) => {
                         </span>
                     ))}
                 </div>
-                <button type="submit">{loder?<div className="loder"></div>:'Save Account'}</button>
+                <button type="submit">{loder ? <div className="loder"></div> : 'Save Account'}</button>
             </form>
         </div>
     );

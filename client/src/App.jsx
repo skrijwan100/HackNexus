@@ -26,7 +26,6 @@ function App() {
 
         // if (!user) return; // <-- important check
         const token = await user.getIdToken();
-        console.log("ID Token:", token);
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/fecthuser`, {
           headers: {
             Authorization: `Bearer ${token}`
@@ -62,7 +61,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
-          <Route path='/profile' element={<Profile />} />
+          <Route path='/profile' element={<Profile userdata={userdata} />} />
         </Routes>
       </BrowserRouter>
     </>

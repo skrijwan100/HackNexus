@@ -3,23 +3,26 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router";
 import { useloding } from "../context/LodingContext";
 import LoadingScreen from "./Mainloder";
+import axios from "axios";
 const Profile = ({ userdata }) => {
   const [image, setImage] = useState(null);
-  const [newdata,setnewdata]=useState({collagename:userdata.collagename,yearofstudy:userdata.study,bio:userdata.bio})
+  const [newdata, setnewdata] = useState({ collagename: userdata.collagename, yearofstudy: userdata.study, bio: userdata.bio })
   const skillsList = [
     "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA"
   ];
   const intarestlist = ["Hackathon", "Seminar", "Workshop", "Leetcode"]
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedintarest, setSelectedintarest] = useState([])
+  const [update, setupdate] = useState(false)
   const { user } = useAuth();
   const { loading, setLoading } = useloding()
   const naviget = useNavigate()
-  useEffect(()=>{
-    const chakelog=async()=>{
+  const [selectedFile, setSelectedFile] = useState(null)
+  useEffect(() => {
+    const chakelog = async () => {
       const token = await user.getIdToken();
       console.log("ID Token:", token);
-      if(!token){
+      if (!token) {
         naviget("/")
 
       }
@@ -27,15 +30,20 @@ const Profile = ({ userdata }) => {
     }
     chakelog();
 
-  },[])
-  const onchange=(e)=>{
-    setnewdata({...newdata,[e.target.name]:e.target.value})
+  }, [])
+  const onchange = (e) => {
+    setnewdata({ ...newdata, [e.target.name]: e.target.value })
+    if (userdata.bio != newdata.bio || userdata.collagename != newdata.collagename || userdata.study != newdata.yearofstudy
+    ) {
+      setupdate(true)
+    }
   }
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(URL.createObjectURL(file));
     }
+    setSelectedFile(e.target.files[0])
   };
   const toggleSkill = (skill) => {
     if (selectedSkills.includes(skill)) {
@@ -51,13 +59,44 @@ const Profile = ({ userdata }) => {
       setSelectedintarest([...selectedintarest, skill]);
     }
   }
+
+  const handleupdatedata = async (e) => {
+    e.preventDefault()
+    const formData = new FormData();
+    if (selectedFile) {
+      formData.append("profilepic", selectedFile);
+    }
+   let margeallskills=[...selectedSkills,...userdata.skill]
+   let margeallintarest=[...selectedintarest,...userdata.intarest]
+    const userupdateinfo = ({
+      bio: newdata.bio,
+      collagename: newdata.collagename,
+      yearofs: newdata.yearofstudy,
+      allskills: margeallskills,
+      allintarest: margeallintarest
+
+    })
+    formData.append("userinfo", JSON.stringify(userupdateinfo));
+    try {
+      const responce = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/updatedata/${userdata._id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      });
+      console.log(responce)
+
+    } catch (error) {
+      console.log(error)
+
+    }
+  }
   return (
-    
+
     <div className="min-h-screen bg-black text-[#00D084] font-[] flex justify-center py-12 px-6">
-     { !loading?<>
-      <div className="text-6xl text-white"> <LoadingScreen/></div>
-     
-     </>:<div className="w-full max-w-3xl bg-[#0d0d0d] border border-[#00D084]/40 rounded-2xl shadow-[0_0_25px_#00D08440] p-8">
+      {!loading ? <>
+        <div className="text-6xl text-white"> <LoadingScreen /></div>
+
+      </> : <div className="w-full max-w-3xl bg-[#0d0d0d] border border-[#00D084]/40 rounded-2xl shadow-[0_0_25px_#00D08440] p-8">
 
         {/* Header */}
         <h1 className="text-2xl font-semibold mb-6 text-center">
@@ -78,7 +117,7 @@ const Profile = ({ userdata }) => {
         </div>
 
         {/* Form Section */}
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleupdatedata}>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block mb-1 text-gray-400 text-sm">Full Name</label>
@@ -105,7 +144,7 @@ const Profile = ({ userdata }) => {
             <div>
               <label className="block mb-1 text-gray-400 text-sm">College / Organization</label>
               <input
-               name="collagename"
+                name="collagename"
                 type="text"
                 value={newdata.collagename}
                 onChange={onchange}
@@ -124,17 +163,17 @@ const Profile = ({ userdata }) => {
               />
             </div>
           </div>
-           <label className="block mb-1 text-gray-400 text-sm">Your Bio</label>
-            <textarea
-                    className="py-3 px-4 block w-full resize-none textareastyle focus:shadow-[0_0_8px_#00D084]"
-                    style={{border:"1px solid #00d084",marginBottom:"10px"}}
-                    rows={3}
-                    name="bio"
-                    value={newdata.bio}
-                    onChange={onchange}
-                    placeholder="Tell about your self" required
-                     
-                />
+          <label className="block mb-1 text-gray-400 text-sm">Your Bio</label>
+          <textarea
+            className="py-3 px-4 block w-full resize-none textareastyle focus:shadow-[0_0_8px_#00D084]"
+            style={{ border: "1px solid #00d084", marginBottom: "10px" }}
+            rows={3}
+            name="bio"
+            value={newdata.bio}
+            onChange={onchange}
+            placeholder="Tell about your self" required
+
+          />
           <label className="block mb-1 text-gray-400 text-sm">Your Skills</label>
           <div className="skills-container">
 
@@ -162,12 +201,12 @@ const Profile = ({ userdata }) => {
           </div>
           {/* Save Button */}
           <div className="text-center pt-6">
-            <button
+            {update ? <button
               type="submit"
               className="bg-[#00D084] text-black px-8 py-2 rounded-md font-semibold hover:shadow-[0_0_18px_#00D084] transition-all"
             >
               Save Changes
-            </button>
+            </button> : ""}
           </div>
         </form>
       </div>}

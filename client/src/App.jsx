@@ -12,6 +12,7 @@ import Profile from './components/Profile'
 import LoadingScreen from './components/Mainloder'
 import { useloding } from './context/LodingContext'
 import { useAuth } from './context/AuthContext'
+import { Flip, ToastContainer } from 'react-toastify'
 function App() {
   const { user } = useAuth();
   const { loading, setLoading } = useloding()
@@ -56,7 +57,7 @@ function App() {
     <>
       <BrowserRouter>
         <Navbar userdata={userdata} />
-
+        <ToastContainer transition={Flip}/>
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />

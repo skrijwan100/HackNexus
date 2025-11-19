@@ -3,10 +3,12 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router";
 import { useloding } from "../context/LodingContext";
 import LoadingScreen from "./Mainloder";
+import { handleSuccess,handleError } from "./ErrorMessage";
 import axios from "axios";
 const Profile = ({ userdata }) => {
   const [image, setImage] = useState(null);
   const [newdata, setnewdata] = useState({ collagename: userdata.collagename, yearofstudy: userdata.study, bio: userdata.bio })
+  const [loder,setloder]=useState(false)
   const skillsList = [
     "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA"
   ];
@@ -62,6 +64,7 @@ const Profile = ({ userdata }) => {
 
   const handleupdatedata = async (e) => {
     e.preventDefault()
+    setloder(true)
     const formData = new FormData();
     if (selectedFile) {
       formData.append("profilepic", selectedFile);
@@ -84,9 +87,16 @@ const Profile = ({ userdata }) => {
         }
       });
       console.log(responce)
+    setloder(false)
+
+    if(responce.data.status){
+      setupdate(false)
+      return handleSuccess("Your update is save.")
+    }
 
     } catch (error) {
       console.log(error)
+      setloder(false)
 
     }
   }
@@ -205,7 +215,8 @@ const Profile = ({ userdata }) => {
               type="submit"
               className="bg-[#00D084] text-black px-8 py-2 rounded-md font-semibold hover:shadow-[0_0_18px_#00D084] transition-all"
             >
-              Save Changes
+              {loder ? <div className="loder"></div> : 'Save Changes'}
+              
             </button> : ""}
           </div>
         </form>

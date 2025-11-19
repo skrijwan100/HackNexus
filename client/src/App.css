@@ -131,7 +131,13 @@ body {
   font-size: 14px;
   outline: none;
 }
-
+.textareastyle{
+  color:#00D084;
+}
+.textareastyle:focus{
+  border: 1px solid #00D084;
+  outline: none;
+}
 .login-box input::placeholder {
   color: #62ffce91;
 }

@@ -11,7 +11,7 @@ const Signup = ({ userdata }) => {
     const [selectedSkills, setSelectedSkills] = useState([]);
     const [selectedintarest, setSelectedintarest] = useState([]);
     const [image, setImage] = useState(null);
-    const [formdata, setformdata] = useState({ collagename: "", yearofs: "" })
+    const [formdata, setformdata] = useState({ collagename: "", yearofs: "", bio: "" })
     const [selectedFile, setSelectedFile] = useState(null)
     const [loder, setloder] = useState(false)
     const navigate = useNavigate()
@@ -54,6 +54,7 @@ const Signup = ({ userdata }) => {
         const userinfo = ({
             uid: userdata.uid,
             name: userdata.displayName,
+            bio:formdata.bio,
             email: userdata.email,
             collagename: formdata.collagename,
             yearofs: formdata.yearofs,
@@ -96,8 +97,18 @@ const Signup = ({ userdata }) => {
                     <input id="profile-upload" type="file" name="profilepic" accept="image/*" onChange={handleImageUpload} />
                     <p className="upload-text">Tap to upload profile picture</p>
                 </div>
-                <input value={userdata.displayName} type="text" placeholder="Full Name" required readOnly />
-                <input value={userdata.email} type="email" placeholder="Email Address" required readOnly />
+                <input name="usernam" value={userdata.displayName} type="text" placeholder="Full Name" required readOnly />
+                <input name="useremail" value={userdata.email} type="email" placeholder="Email Address" required readOnly />
+                <textarea
+                    className="py-3 px-4 block w-full resize-none textareastyle"
+                    style={{border:"1px solid #00d084"}}
+                    rows={3}
+                    name="bio"
+                    value={formdata.bio}
+                    onChange={onchange}
+                    placeholder="Tell about your self" required
+                     
+                />
                 <input value={formdata.collagename} onChange={onchange} name="collagename" type="text" placeholder="College/ Organization" required />
                 <input value={formdata.yearofs} onChange={onchange} name="yearofs" type="text" placeholder="Year of study" required />
                 <label className="section-title">Select Your Skills:</label>

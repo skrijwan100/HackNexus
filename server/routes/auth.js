@@ -24,7 +24,7 @@ admin.initializeApp({
   })
 });
 userRoute.post("/savedata",upload.single('profilepic'),async(req,res)=>{
-    const {uid, name, email, collagename, yearofs,allskills,allintarest,existingPhotoURL } = JSON.parse(req.body.userinfo)
+    const {uid, name,bio,email, collagename, yearofs,allskills,allintarest,existingPhotoURL } = JSON.parse(req.body.userinfo)
     // console.log(name, email, collagename, yearofs,allskills,allintarest,existingPhotoURL)
     let imgurl=""
     if(req.file){
@@ -37,6 +37,7 @@ userRoute.post("/savedata",upload.single('profilepic'),async(req,res)=>{
     const newuser= new User({
         uid:uid,
         fullname:name,
+        bio:bio,
         email:email,
         imgUrl:existingPhotoURL||imgurl,
         collagename:collagename,

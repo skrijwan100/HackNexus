@@ -15,29 +15,6 @@ const Navbar = ({userdata}) => {
   const [email, setemail] = useState('')
   const { user, googleSignIn, logout } = useAuth();
   const {loading,setLoading}=useloding()
-  // useEffect(() => {
-  //   const getToken = async () => {
-  //     setLoading(true)
-  //     if (!user) return; // <-- important check
-  //     const token = await user.getIdToken();
-  //     console.log("ID Token:", token);
-  //     const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/fecthuser`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`
-  //       }
-  //     });
-  //     const data = await res.json();
-  //     setLoading(false)
-  //     if (data.status) {
-  //       setimgurl(data.data.imgUrl)
-  //       setname(data.data.fullname)
-  //       setemail(data.data.email)
-  //       setLoading(false)
-  //       return setlog(true)
-  //     }
-  //   };
-  //   getToken();
-  // }, [user, out]);
   const handlemodle = () => {
     if (isopen) {
       return setisopen(false)

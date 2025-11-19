@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import Logo from './assets/logo.png'
 import './App.css'
 import Navbar from './components/Navbar'
 import {
@@ -14,16 +12,15 @@ import Profile from './components/Profile'
 import LoadingScreen from './components/Mainloder'
 import { useloding } from './context/LodingContext'
 import { useAuth } from './context/AuthContext'
-import GradientBackground from './components/Background'
 function App() {
   const { user } = useAuth();
   const { loading, setLoading } = useloding()
   const [log, setlog] = useState(true)
-  const [userdata,setuserdata]=useState({})
-    useEffect(() => {
-      const getToken = async () => {
-        setlog(true)
-        try {
+  const [userdata, setuserdata] = useState({})
+  useEffect(() => {
+    const getToken = async () => {
+      setlog(true)
+      try {
 
         // if (!user) return; // <-- important check
         const token = await user.getIdToken();
@@ -40,18 +37,18 @@ function App() {
           setLoading(true)
           return setlog(false)
         }
-                  
-        } catch (error) {
-              setLoading(false)
+
+      } catch (error) {
+        setLoading(false)
         setlog(false)
-        }
-      };
-      getToken();
-    }, [user]);
+      }
+    };
+    getToken();
+  }, [user]);
   if (log) {
     return (
       <>
-          <LoadingScreen />
+        <LoadingScreen />
       </>
     )
   }
@@ -59,7 +56,7 @@ function App() {
     <>
       <BrowserRouter>
         <Navbar userdata={userdata} />
-       
+
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />

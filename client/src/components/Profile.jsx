@@ -1,13 +1,36 @@
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router";
+import { useloding } from "../context/LodingContext";
+import LoadingScreen from "./Mainloder";
 const Profile = ({ userdata }) => {
   const [image, setImage] = useState(null);
+  const [newdata,setnewdata]=useState({collagename:userdata.collagename,yearofstudy:userdata.study,bio:userdata.bio})
   const skillsList = [
     "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA"
   ];
   const intarestlist = ["Hackathon", "Seminar", "Workshop", "Leetcode"]
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedintarest, setSelectedintarest] = useState([])
+  const { user } = useAuth();
+  const { loading, setLoading } = useloding()
+  const naviget = useNavigate()
+  useEffect(()=>{
+    const chakelog=async()=>{
+      const token = await user.getIdToken();
+      console.log("ID Token:", token);
+      if(!token){
+        naviget("/")
+
+      }
+
+    }
+    chakelog();
+
+  },[])
+  const onchange=(e)=>{
+    setnewdata({...newdata,[e.target.name]:e.target.value})
+  }
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -22,15 +45,19 @@ const Profile = ({ userdata }) => {
     }
   }
   const toggleintarest = (skill) => {
-        if (selectedintarest.includes(skill)) {
-            setSelectedintarest(selectedintarest.filter((s) => s !== skill));
-        } else {
-            setSelectedintarest([...selectedintarest, skill]);
-        }
+    if (selectedintarest.includes(skill)) {
+      setSelectedintarest(selectedintarest.filter((s) => s !== skill));
+    } else {
+      setSelectedintarest([...selectedintarest, skill]);
     }
+  }
   return (
-    <div className="min-h-screen bg-black text-[#00D084] font-[Orbitron] flex justify-center py-12 px-6">
-      <div className="w-full max-w-3xl bg-[#0d0d0d] border border-[#00D084]/40 rounded-2xl shadow-[0_0_25px_#00D08440] p-8">
+    
+    <div className="min-h-screen bg-black text-[#00D084] font-[] flex justify-center py-12 px-6">
+     { !loading?<>
+      <div className="text-6xl text-white"> <LoadingScreen/></div>
+     
+     </>:<div className="w-full max-w-3xl bg-[#0d0d0d] border border-[#00D084]/40 rounded-2xl shadow-[0_0_25px_#00D08440] p-8">
 
         {/* Header */}
         <h1 className="text-2xl font-semibold mb-6 text-center">
@@ -41,13 +68,12 @@ const Profile = ({ userdata }) => {
         <div className="flex flex-col items-center mb-8">
           <label htmlFor="profile-upload" className="cursor-pointer">
             <img
-              src={userdata.imgUrl || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+              src={image ? image : userdata.imgUrl || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
               alt="User"
               className="w-28 h-28 rounded-full border-2 border-[#00D084] object-cover shadow-[0_0_18px_#00D08480] hover:shadow-[0_0_25px_#00ffc480] transition-all duration-300"
             />
           </label>
-          <input i
-            d="profile-upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          <input id="profile-upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
           <p className="text-xs text-gray-400 mt-2">Tap to change profile photo</p>
         </div>
 
@@ -61,6 +87,7 @@ const Profile = ({ userdata }) => {
                 type="text"
                 value={userdata.fullname}
                 className="w-full bg-transparent border border-[#00D084] text-[#00D084] rounded-md px-3 py-2 outline-none focus:shadow-[0_0_8px_#00D084] transition-all"
+                readOnly
               />
             </div>
             <div>
@@ -69,6 +96,7 @@ const Profile = ({ userdata }) => {
                 type="email"
                 value={userdata.email}
                 className="w-full bg-transparent border border-[#00D084] text-[#00D084] rounded-md px-3 py-2 outline-none focus:shadow-[0_0_8px_#00D084]"
+                readOnly
               />
             </div>
           </div>
@@ -77,9 +105,10 @@ const Profile = ({ userdata }) => {
             <div>
               <label className="block mb-1 text-gray-400 text-sm">College / Organization</label>
               <input
-
+               name="collagename"
                 type="text"
-                value={userdata.collagename}
+                value={newdata.collagename}
+                onChange={onchange}
                 className="w-full bg-transparent border border-[#00D084] text-[#00D084] rounded-md px-3 py-2 outline-none focus:shadow-[0_0_8px_#00D084]"
               />
             </div>
@@ -87,14 +116,25 @@ const Profile = ({ userdata }) => {
             <div>
               <label className="block mb-1 text-gray-400 text-sm">Year of study</label>
               <input
-
+                name="yearofstudy"
                 type="text"
-                value={userdata.study}
-
+                value={newdata.yearofstudy}
+                onChange={onchange}
                 className="w-full p-2 bg-transparent border border-[#00D084] text-[#00D084] rounded-md px-3 py-2 outline-none focus:shadow-[0_0_8px_#00D084]"
               />
             </div>
           </div>
+           <label className="block mb-1 text-gray-400 text-sm">Your Bio</label>
+            <textarea
+                    className="py-3 px-4 block w-full resize-none textareastyle focus:shadow-[0_0_8px_#00D084]"
+                    style={{border:"1px solid #00d084",marginBottom:"10px"}}
+                    rows={3}
+                    name="bio"
+                    value={newdata.bio}
+                    onChange={onchange}
+                    placeholder="Tell about your self" required
+                     
+                />
           <label className="block mb-1 text-gray-400 text-sm">Your Skills</label>
           <div className="skills-container">
 
@@ -130,7 +170,7 @@ const Profile = ({ userdata }) => {
             </button>
           </div>
         </form>
-      </div>
+      </div>}
     </div>
   );
 };

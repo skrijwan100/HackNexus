@@ -13,26 +13,25 @@ const Profile = ({ userdata }) => {
     "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA"
   ];
   const intarestlist = ["Hackathon", "Seminar", "Workshop", "Leetcode"]
-  const [selectedSkills, setSelectedSkills] = useState([]);
-  const [selectedintarest, setSelectedintarest] = useState([])
+  const [selectedSkills, setSelectedSkills] = useState([ ...(userdata.skill || [])]);
+  const [selectedintarest, setSelectedintarest] = useState([ ...(userdata.intarest || [])])
   const [update, setupdate] = useState(false)
   const { user } = useAuth();
   const { loading, setLoading } = useloding()
   const naviget = useNavigate()
   const [selectedFile, setSelectedFile] = useState(null)
-  useEffect(() => {
-    const chakelog = async () => {
-      const token = await user.getIdToken();
-      console.log("ID Token:", token);
-      if (!token) {
-        naviget("/")
+  // useEffect(() => {
+  //   const chakelog = async () => {
+  //     const token = await user.getIdToken();
+  //     console.log("ID Token:", token);
+  //     if (!token) {
+  //       naviget("/")
 
-      }
+  //     }
+  //   }
+  //   chakelog();
 
-    }
-    chakelog();
-
-  }, [])
+  // }, [])
   const onchange = (e) => {
     setnewdata({ ...newdata, [e.target.name]: e.target.value })
     if (userdata.bio != newdata.bio || userdata.collagename != newdata.collagename || userdata.study != newdata.yearofstudy
@@ -44,10 +43,12 @@ const Profile = ({ userdata }) => {
     const file = e.target.files[0];
     if (file) {
       setImage(URL.createObjectURL(file));
+      setupdate(true)
     }
     setSelectedFile(e.target.files[0])
   };
   const toggleSkill = (skill) => {
+    setupdate(true)
     if (selectedSkills.includes(skill)) {
       setSelectedSkills(selectedSkills.filter((s) => s !== skill));
     } else {
@@ -55,6 +56,7 @@ const Profile = ({ userdata }) => {
     }
   }
   const toggleintarest = (skill) => {
+       setupdate(true)
     if (selectedintarest.includes(skill)) {
       setSelectedintarest(selectedintarest.filter((s) => s !== skill));
     } else {
@@ -69,14 +71,12 @@ const Profile = ({ userdata }) => {
     if (selectedFile) {
       formData.append("profilepic", selectedFile);
     }
-   let margeallskills=[...selectedSkills,...userdata.skill]
-   let margeallintarest=[...selectedintarest,...userdata.intarest]
     const userupdateinfo = ({
       bio: newdata.bio,
       collagename: newdata.collagename,
       yearofs: newdata.yearofstudy,
-      allskills: margeallskills,
-      allintarest: margeallintarest
+      allskills: selectedSkills,
+      allintarest: selectedintarest
 
     })
     formData.append("userinfo", JSON.stringify(userupdateinfo));
@@ -86,7 +86,7 @@ const Profile = ({ userdata }) => {
           "Content-Type": "multipart/form-data",
         }
       });
-      console.log(responce)
+      // console.log(responce)
     setloder(false)
 
     if(responce.data.status){
@@ -95,7 +95,7 @@ const Profile = ({ userdata }) => {
     }
 
     } catch (error) {
-      console.log(error)
+      console.log(error)  
       setloder(false)
 
     }
@@ -190,7 +190,7 @@ const Profile = ({ userdata }) => {
             {skillsList.map((skill) => (
               <span
                 key={skill}
-                className={`${userdata.skill.includes(skill) ? "skill-tag selected" : "skill-tag"} ${selectedSkills.includes(skill) ? "skill-tag selected" : "skill-tag"}`}
+                className={`${selectedSkills.includes(skill) ? "skill-tag selected" : "skill-tag"} ${selectedSkills.includes(skill) ? "skill-tag selected" : "skill-tag"}`}
                 onClick={() => toggleSkill(skill)}
               >
                 {skill}
@@ -202,7 +202,7 @@ const Profile = ({ userdata }) => {
             {intarestlist.map((skill) => (
               <span
                 key={skill}
-                className={`${userdata.intarest.includes(skill) ? "skill-tag selected" : "skill-tag"} ${selectedintarest.includes(skill) ? "skill-tag selected" : "skill-tag"}`}
+                className={`${selectedintarest.includes(skill) ? "skill-tag selected" : "skill-tag"} ${selectedintarest.includes(skill) ? "skill-tag selected" : "skill-tag"}`}
                 onClick={() => toggleintarest(skill)}
               >
                 {skill}

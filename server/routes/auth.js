@@ -70,7 +70,7 @@ userRoute.put("/updatedata/:id", upload.single('profilepic'), async (req, res) =
   try {
 
   const { bio, collagename, yearofs, allskills, allintarest } = JSON.parse(req.body.userinfo)
-  console.log(req.params.id)
+  // console.log(req.params.id)
   let imgurl = ""
   if (req.file) {
     const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
@@ -80,7 +80,7 @@ userRoute.put("/updatedata/:id", upload.single('profilepic'), async (req, res) =
     imgurl = cloudinaryResponse.secure_url;
   }
   const finduser= await User.findById(req.params.id)
-  console.log(finduser)
+  // console.log(finduser)
   const updateuserdata={}
   if(finduser.bio!=bio){
     updateuserdata.bio=bio;

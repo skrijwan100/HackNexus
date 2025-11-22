@@ -3,7 +3,7 @@ import axios from "axios"
 import logo from "../assets/logo.png"
 import { useNavigate } from "react-router";
 const skillsList = [
-    "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA"
+    "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA",
 ];
 const intarestlist = ["Hackathon", "Seminar", "Workshop", "Leetcode"]
 
@@ -16,7 +16,7 @@ const Signup = ({ userdata }) => {
     const [loder, setloder] = useState(false)
     const navigate = useNavigate()
     useEffect(() => {
-        console.log(userdata)
+        // console.log(userdata)
     }, [])
     const toggleSkill = (skill) => {
         if (selectedSkills.includes(skill)) {
@@ -46,7 +46,7 @@ const Signup = ({ userdata }) => {
         e.preventDefault();
         setloder(true)
         const formData = new FormData();
-        console.log(selectedFile)
+        // console.log(selectedFile)
         if (selectedFile) {
             formData.append("profilepic", selectedFile);
         }
@@ -69,9 +69,10 @@ const Signup = ({ userdata }) => {
                     "Content-Type": "multipart/form-data",
                 }
             });
-            console.log(responce)
+            // console.log(responce)
             if (responce.status) {
                 navigate("/")
+                window.location.reload();
                 return setloder(false)
             }
         } catch (error) {

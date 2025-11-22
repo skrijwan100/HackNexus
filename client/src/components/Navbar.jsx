@@ -15,6 +15,7 @@ const Navbar = ({userdata}) => {
   const [email, setemail] = useState('')
   const { user, googleSignIn, logout } = useAuth();
   const {loading,setLoading}=useloding()
+  const naviget=useNavigate()
   const handlemodle = () => {
     if (isopen) {
       return setisopen(false)
@@ -23,6 +24,7 @@ const Navbar = ({userdata}) => {
   }
   const handlelogout = async () => {
     await logout()
+    naviget("/")
     window.location.reload();
   }
   return (

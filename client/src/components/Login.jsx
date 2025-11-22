@@ -13,10 +13,10 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const data = await googleSignIn();
-      console.log(data.user)
+      // console.log(data.user)
       setuserdata(data.user)
       const token = await auth.currentUser.getIdToken();
-      console.log(token)
+      // console.log(token)
       
       const res1 = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/fecthuser`, {
         headers: {
@@ -25,7 +25,7 @@ const Login = () => {
       });
 
       const data2 = await res1.json();
-      console.log(data2);
+      // console.log(data2);
       if(data2.status){
           return navigate("/")
       }
@@ -39,7 +39,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ email, password });
+    // console.log({ email, password });
     // TODO: Add your backend login API here
   };
 

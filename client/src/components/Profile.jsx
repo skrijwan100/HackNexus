@@ -1,226 +1,280 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router";
-import { useloding } from "../context/LodingContext";
-import LoadingScreen from "./Mainloder";
-import { handleSuccess,handleError } from "./ErrorMessage";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom"; // Fixed import source
 import axios from "axios";
+import { Camera, Save, Loader2 } from "lucide-react"; // Using Icons for better UI
+
+// Contexts
+import { useAuth } from "../context/AuthContext";
+import { useloding as useLoading } from "../context/LodingContext"; // Fixed typo alias
+
+// Components & Utils
+import LoadingScreen from "./Mainloder";
+import { handleSuccess, handleError } from "./ErrorMessage";
+
+// --- Constants ---
+const SKILLS_LIST = [
+  "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", 
+  "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA"
+];
+
+const INTERESTS_LIST = ["Hackathon", "Seminar", "Workshop", "Leetcode"];
+
+// --- Reusable Sub-components ---
+
+const TagSelector = ({ title, options, selected, onToggle }) => (
+  <div className="mb-4">
+    <label className="block mb-2 text-gray-400 text-sm font-medium">{title}</label>
+    <div className="flex flex-wrap gap-2">
+      {options.map((item) => {
+        const isSelected = selected.includes(item);
+        return (
+          <button
+            key={item}
+            type="button"
+            onClick={() => onToggle(item)}
+            className={`px-3 py-1 text-xs rounded-full border transition-all duration-200 
+              ${isSelected 
+                ? "bg-[#00D084] text-black border-[#00D084] shadow-[0_0_10px_#00D08460]" 
+                : "bg-transparent text-gray-300 border-gray-600 hover:border-[#00D084]"
+              }`}
+          >
+            {item}
+          </button>
+        );
+      })}
+    </div>
+  </div>
+);
+
+const InputField = ({ label, name, value, onChange, readOnly = false, type = "text", required = false }) => (
+  <div className="flex flex-col">
+    <label className="block mb-1 text-gray-400 text-sm font-medium">
+      {label} {required && <span className="text-red-500">*</span>}
+    </label>
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      readOnly={readOnly}
+      className={`w-full bg-[#0d0d0d] border border-[#00D084]/50 text-[#00D084] rounded-md px-4 py-2.5 outline-none transition-all duration-300
+        ${readOnly ? "opacity-70 cursor-not-allowed" : "focus:border-[#00D084] focus:shadow-[0_0_8px_#00D08440]"}
+      `}
+    />
+  </div>
+);
+
+// --- Main Component ---
+
 const Profile = ({ userdata }) => {
-  const [image, setImage] = useState(null);
-  const [newdata, setnewdata] = useState({ collagename: userdata.collagename, yearofstudy: userdata.study, bio: userdata.bio })
-  const [loder,setloder]=useState(false)
-  const skillsList = [
-    "React", "NextJs", "Node", "Python", "C++", "Java", "UI/UX", "Blockchain", "AI/ML", "Flutter", "CyberSecurity", "FullStack", "DSA"
-  ];
-  const intarestlist = ["Hackathon", "Seminar", "Workshop", "Leetcode"]
-  const [selectedSkills, setSelectedSkills] = useState([ ...(userdata.skill || [])]);
-  const [selectedintarest, setSelectedintarest] = useState([ ...(userdata.intarest || [])])
-  const [update, setupdate] = useState(false)
+  const navigate = useNavigate();
   const { user } = useAuth();
-  const { loading, setLoading } = useloding()
-  const naviget = useNavigate()
-  const [selectedFile, setSelectedFile] = useState(null)
-  // useEffect(() => {
-  //   const chakelog = async () => {
-  //     const token = await user.getIdToken();
-  //     console.log("ID Token:", token);
-  //     if (!token) {
-  //       naviget("/")
+  const { loading, setLoading } = useLoading();
 
-  //     }
-  //   }
-  //   chakelog();
+  // Local State
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  // }, [])
-  const onchange = (e) => {
-    setnewdata({ ...newdata, [e.target.name]: e.target.value })
-    if (userdata.bio != newdata.bio || userdata.collagename != newdata.collagename || userdata.study != newdata.yearofstudy
-    ) {
-      setupdate(true)
-    }
-  }
-  const handleImageUpload = (e) => {
+  // Form State
+  const [formData, setFormData] = useState({
+    collegeName: userdata?.collagename || "",
+    yearOfStudy: userdata?.study || "",
+    bio: userdata?.bio || "",
+    skills: userdata?.skill || [],
+    interests: userdata?.intarest || [], // Fixed typo 'intarest' to 'interests' for internal logic, mapped back later
+  });
+
+  // Handle Text Inputs
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setHasChanges(true);
+  };
+
+  // Handle Image Upload with Validation
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
-      setupdate(true)
+      if (file.size > 5 * 1024 * 1024) { // 5MB Limit
+        return handleError("File size should be less than 5MB");
+      }
+      setPreviewImage(URL.createObjectURL(file));
+      setSelectedFile(file);
+      setHasChanges(true);
     }
-    setSelectedFile(e.target.files[0])
   };
-  const toggleSkill = (skill) => {
-    setupdate(true)
-    if (selectedSkills.includes(skill)) {
-      setSelectedSkills(selectedSkills.filter((s) => s !== skill));
-    } else {
-      setSelectedSkills([...selectedSkills, skill]);
-    }
-  }
-  const toggleintarest = (skill) => {
-       setupdate(true)
-    if (selectedintarest.includes(skill)) {
-      setSelectedintarest(selectedintarest.filter((s) => s !== skill));
-    } else {
-      setSelectedintarest([...selectedintarest, skill]);
-    }
-  }
 
-  const handleupdatedata = async (e) => {
-    e.preventDefault()
-    setloder(true)
-    const formData = new FormData();
+  // Handle Toggle for Arrays (Skills/Interests)
+  const handleToggle = useCallback((listType, item) => {
+    setFormData((prev) => {
+      const currentList = prev[listType];
+      const newList = currentList.includes(item)
+        ? currentList.filter((i) => i !== item)
+        : [...currentList, item];
+      
+      return { ...prev, [listType]: newList };
+    });
+    setHasChanges(true);
+  }, []);
+
+  // Submit Handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!hasChanges) return;
+
+    setIsSubmitting(true);
+    const apiFormData = new FormData();
+
     if (selectedFile) {
-      formData.append("profilepic", selectedFile);
+      apiFormData.append("profilepic", selectedFile);
     }
-    const userupdateinfo = ({
-      bio: newdata.bio,
-      collagename: newdata.collagename,
-      yearofs: newdata.yearofstudy,
-      allskills: selectedSkills,
-      allintarest: selectedintarest
 
-    })
-    formData.append("userinfo", JSON.stringify(userupdateinfo));
+    // Prepare JSON payload (Mapping back to backend expected keys)
+    const userUpdateInfo = {
+      bio: formData.bio,
+      collagename: formData.collegeName,
+      yearofs: formData.yearOfStudy,
+      allskills: formData.skills,
+      allintarest: formData.interests,
+    };
+
+    apiFormData.append("userinfo", JSON.stringify(userUpdateInfo));
+
     try {
-      const responce = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/updatedata/${userdata._id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        }
-      });
-      // console.log(responce)
-    setloder(false)
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/updatedata/${userdata._id}`,
+        apiFormData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-    if(responce.data.status){
-      setupdate(false)
-      return handleSuccess("Your update is save.")
-    }
-
+      if (response.data.status) {
+        handleSuccess("Profile updated successfully!");
+        setHasChanges(false);
+        // Optional: Refresh global user data here if context supports it
+      } else {
+        handleError(response.data.message || "Update failed.");
+      }
     } catch (error) {
-      console.log(error)  
-      setloder(false)
-
+      console.error("Profile Update Error:", error);
+      handleError(error.response?.data?.message || "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  // Global Loading Check
+  if (!loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <LoadingScreen />
+      </div>
+    );
   }
+
   return (
-
-    <div className="min-h-screen bg-black text-[#00D084] font-[] flex justify-center py-12 px-6">
-      {!loading ? <>
-        <div className="text-6xl text-white"> <LoadingScreen /></div>
-
-      </> : <div className="w-full max-w-3xl bg-[#0d0d0d] border border-[#00D084]/40 rounded-2xl shadow-[0_0_25px_#00D08440] p-8">
-
-        {/* Header */}
-        <h1 className="text-2xl font-semibold mb-6 text-center">
+    <div className="min-h-screen bg-black text-[#00D084] flex justify-center py-12 px-4 sm:px-6">
+      <div className="w-full max-w-3xl bg-[#0d0d0d] border border-[#00D084]/30 rounded-2xl shadow-[0_0_20px_rgba(0,208,132,0.15)] p-6 md:p-10 animate-fade-in-up">
+        
+        <h1 className="text-3xl font-bold mb-8 text-center text-white tracking-wide">
           Account Settings
         </h1>
 
-        {/* Profile Picture Upload */}
-        <div className="flex flex-col items-center mb-8">
-          <label htmlFor="profile-upload" className="cursor-pointer">
+        {/* Profile Image Section */}
+        <div className="flex flex-col items-center mb-8 group">
+          <div className="relative">
             <img
-              src={image ? image : userdata.imgUrl || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
-              alt="User"
-              className="w-28 h-28 rounded-full border-2 border-[#00D084] object-cover shadow-[0_0_18px_#00D08480] hover:shadow-[0_0_25px_#00ffc480] transition-all duration-300"
+              src={previewImage || userdata?.imgUrl || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+              alt="Profile"
+              className="w-32 h-32 rounded-full border-2 border-[#00D084] object-cover shadow-[0_0_15px_#00D08460] group-hover:shadow-[0_0_25px_#00D08480] transition-all duration-300"
             />
-          </label>
-          <input id="profile-upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-          <p className="text-xs text-gray-400 mt-2">Tap to change profile photo</p>
+            <label 
+              htmlFor="profile-upload" 
+              className="absolute bottom-0 right-0 bg-[#00D084] text-black p-2 rounded-full cursor-pointer hover:bg-white transition-colors shadow-lg"
+            >
+              <Camera size={18} />
+            </label>
+          </div>
+          <input 
+            id="profile-upload" 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            onChange={handleImageChange} 
+          />
+          <p className="text-xs text-gray-500 mt-3">Recommended: Square JPG/PNG, Max 5MB</p>
         </div>
 
-        {/* Form Section */}
-        <form className="space-y-6" onSubmit={handleupdatedata}>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block mb-1 text-gray-400 text-sm">Full Name</label>
-              <input
-
-                type="text"
-                value={userdata.fullname}
-                className="w-full bg-transparent border border-[#00D084] text-[#00D084] rounded-md px-3 py-2 outline-none focus:shadow-[0_0_8px_#00D084] transition-all"
-                readOnly
-              />
-            </div>
-            <div>
-              <label className="block mb-1 text-gray-400 text-sm">Email</label>
-              <input
-                type="email"
-                value={userdata.email}
-                className="w-full bg-transparent border border-[#00D084] text-[#00D084] rounded-md px-3 py-2 outline-none focus:shadow-[0_0_8px_#00D084]"
-                readOnly
-              />
-            </div>
+            <InputField label="Full Name" name="fullname" value={userdata.fullname} readOnly />
+            <InputField label="Email Address" name="email" value={userdata.email} readOnly />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block mb-1 text-gray-400 text-sm">College / Organization</label>
-              <input
-                name="collagename"
-                type="text"
-                value={newdata.collagename}
-                onChange={onchange}
-                className="w-full bg-transparent border border-[#00D084] text-[#00D084] rounded-md px-3 py-2 outline-none focus:shadow-[0_0_8px_#00D084]"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-1 text-gray-400 text-sm">Year of study</label>
-              <input
-                name="yearofstudy"
-                type="text"
-                value={newdata.yearofstudy}
-                onChange={onchange}
-                className="w-full p-2 bg-transparent border border-[#00D084] text-[#00D084] rounded-md px-3 py-2 outline-none focus:shadow-[0_0_8px_#00D084]"
-              />
-            </div>
+            <InputField 
+              label="College / Organization" 
+              name="collegeName" 
+              value={formData.collegeName} 
+              onChange={handleInputChange} 
+            />
+            <InputField 
+              label="Year of Study" 
+              name="yearOfStudy" 
+              value={formData.yearOfStudy} 
+              onChange={handleInputChange} 
+            />
           </div>
-          <label className="block mb-1 text-gray-400 text-sm">Your Bio</label>
-          <textarea
-            className="py-3 px-4 block w-full resize-none textareastyle focus:shadow-[0_0_8px_#00D084]"
-            style={{ border: "1px solid #00d084", marginBottom: "10px" }}
-            rows={3}
-            name="bio"
-            value={newdata.bio}
-            onChange={onchange}
-            placeholder="Tell about your self" required
 
+          <div className="flex flex-col">
+            <label className="block mb-1 text-gray-400 text-sm font-medium">Bio</label>
+            <textarea
+              name="bio"
+              rows={3}
+              value={formData.bio}
+              onChange={handleInputChange}
+              className="w-full bg-[#0d0d0d] border border-[#00D084]/50 text-[#00D084] rounded-md px-4 py-2 outline-none focus:border-[#00D084] focus:shadow-[0_0_8px_#00D08440] resize-none transition-all"
+              placeholder="Tell us about yourself..."
+            />
+          </div>
+
+          <TagSelector 
+            title="Skills" 
+            options={SKILLS_LIST} 
+            selected={formData.skills} 
+            onToggle={(item) => handleToggle("skills", item)} 
           />
-          <label className="block mb-1 text-gray-400 text-sm">Your Skills</label>
-          <div className="skills-container">
 
-            {skillsList.map((skill) => (
-              <span
-                key={skill}
-                className={`${selectedSkills.includes(skill) ? "skill-tag selected" : "skill-tag"} ${selectedSkills.includes(skill) ? "skill-tag selected" : "skill-tag"}`}
-                onClick={() => toggleSkill(skill)}
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-          <label className="block mb-2.5 text-gray-400 text-sm">Your Intarest</label>
-          <div className="skills-container">
-            {intarestlist.map((skill) => (
-              <span
-                key={skill}
-                className={`${selectedintarest.includes(skill) ? "skill-tag selected" : "skill-tag"} ${selectedintarest.includes(skill) ? "skill-tag selected" : "skill-tag"}`}
-                onClick={() => toggleintarest(skill)}
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-          {/* Save Button */}
-          <div className="text-center pt-6">
-            {update ? <button
+          <TagSelector 
+            title="Interests" 
+            options={INTERESTS_LIST} 
+            selected={formData.interests} 
+            onToggle={(item) => handleToggle("interests", item)} 
+          />
+
+          {/* Submit Button */}
+          <div className="flex justify-center pt-4">
+            <button
               type="submit"
-              className="bg-[#00D084] text-black px-8 py-2 rounded-md font-semibold hover:shadow-[0_0_18px_#00D084] transition-all"
+              disabled={!hasChanges || isSubmitting}
+              className={`
+                flex items-center gap-2 px-8 py-2.5 rounded-lg font-bold transition-all duration-300
+                ${hasChanges && !isSubmitting
+                  ? "bg-[#00D084] text-black hover:bg-[#00b074] hover:shadow-[0_0_20px_#00D08460] cursor-pointer" 
+                  : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700"}
+              `}
             >
-              {loder ? <div className="loder"></div> : 'Save Changes'}
-              
-            </button> : ""}
+              {isSubmitting ? (
+                <> <Loader2 className="animate-spin" size={20} /> Saving... </>
+              ) : (
+                <> <Save size={20} /> Save Changes </>
+              )}
+            </button>
           </div>
         </form>
-      </div>}
+      </div>
     </div>
   );
 };

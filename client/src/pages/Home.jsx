@@ -7,8 +7,8 @@ export default function Home() {
     <>
     <div className="text-2xl text-amber-400">
       <BlackHoleBackground/>
-      <div className='absolute'>
-   <p>Hello</p>
+      <div className='absolute flex justify-center w-full h-[50vh] items-center font-extrabold text-8xl'>
+   {/* <p>Welcome to HackNexus</p> */}
       </div>
     </div>
     </>
